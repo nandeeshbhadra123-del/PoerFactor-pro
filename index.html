@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculate power factor correction requirements and estimate capacitor bank capacity.">
+  <title>PowerFactor Pro | Correction Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">ϟ</span>
+      <span>PowerFactor<span class="brand-accent">Pro</span></span>
+    </a>
+    <nav>
+      <a href="#calculator">Calculator</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#about">About</a>
+    </nav>
+    <a class="nav-button" href="#calculator">Start calculating ↗</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> ELECTRICAL ENGINEERING TOOLKIT</div>
+        <h1>Make every watt<br>work <span>smarter.</span></h1>
+        <p class="hero-description">
+          Calculate the capacitor compensation needed to improve power factor.
+          Turn electrical parameters into clear, actionable estimates.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-button" href="#calculator">Calculate correction <span>→</span></a>
+          <a class="text-button" href="#how-it-works">Explore the method ↓</a>
+        </div>
+        <div class="hero-proof">
+          <span class="proof-icon">✓</span>
+          <span>Instant estimates</span>
+          <span class="proof-divider"></span>
+          <span class="proof-icon">✓</span>
+          <span>Transparent formulas</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="visual-glow"></div>
+        <div class="energy-card">
+          <div class="energy-top">
+            <div>
+              <span class="small-label">POWER QUALITY OVERVIEW</span>
+              <h3>Correction snapshot</h3>
+            </div>
+            <span class="live-tag"><span class="pulse"></span> LIVE DEMO</span>
+          </div>
+          <div class="pf-comparison">
+            <div class="pf-side">
+              <span class="small-label">EXISTING PF</span>
+              <strong>0.75</strong>
+              <span class="status-bad">Needs improvement</span>
+            </div>
+            <div class="pf-arrow">→</div>
+            <div class="pf-side">
+              <span class="small-label">TARGET PF</span>
+              <strong class="cyan">0.95</strong>
+              <span class="status-good">Improved target</span>
+            </div>
+          </div>
+          <div class="mini-meter">
+            <div class="meter-heading"><span>Power factor</span><span>75% → 95%</span></div>
+            <div class="meter-track"><div class="meter-before"></div><div class="meter-after"></div></div>
+            <div class="meter-legend"><span>● Existing</span><span>● Target</span></div>
+          </div>
+          <div class="energy-result">
+            <div class="result-symbol">ϟ</div>
+            <div><span class="small-label">ESTIMATED COMPENSATION</span><strong>55.32 <small>kVAR</small></strong></div>
+            <span class="result-check">✓</span>
+          </div>
+          <div class="visual-footnote">Illustrative example · 100 kW load</div>
+        </div>
+        <div class="floating-chip chip-top"><span>↗</span> Reactive power</div>
+        <div class="floating-chip chip-bottom"><span>◎</span> Engineering estimates</div>
+      </div>
+    </section>
+
+    <section class="stats-strip">
+      <div><span class="stat-icon">ϟ</span><div><strong>kVAR</strong><small>Capacitor requirement</small></div></div>
+      <div><span class="stat-icon">◈</span><div><strong>kVA</strong><small>Apparent power comparison</small></div></div>
+      <div><span class="stat-icon">↘</span><div><strong>Amps</strong><small>Estimated supply current</small></div></div>
+      <div><span class="stat-icon">⌁</span><div><strong>Live</strong><small>Input-based calculation</small></div></div>
+    </section>
+
+    <section id="calculator" class="calculator-section section">
+      <div class="section-heading">
+        <div>
+          <div class="eyebrow">01 / THE CALCULATOR</div>
+          <h2>Calculate your correction.</h2>
+          <p>Enter your load parameters and define your target power factor.</p>
+        </div>
+        <button type="button" id="exampleBtn" class="outline-button">↻ Load example</button>
+      </div>
+
+      <div class="calculator-grid">
+        <form id="calculatorForm" class="input-panel" novalidate>
+          <div class="panel-heading">
+            <div class="panel-icon">⌘</div>
+            <div><h3>Electrical parameters</h3><p>Provide the known system values.</p></div>
+          </div>
+
+          <div class="field">
+            <label for="power">Real power <span class="unit">kW</span></label>
+            <input type="number" id="power" min="0.01" step="any" value="100" required>
+            <small class="field-hint">Useful power consumed by the load.</small>
+            <small class="error" id="powerError"></small>
+          </div>
+
+          <div class="field">
+            <label for="existingPF">Existing power factor</label>
+            <div class="input-with-badge">
+              <input type="number" id="existingPF" min="0.01" max="1" step="any" value="0.75" required>
+              <span class="input-badge">PF₁</span>
+            </div>
+            <div class="range-labels"><span>0.01 · Low</span><span>1.00 · Ideal</span></div>
+            <small class="error" id="existingPFError"></small>
+          </div>
+
+          <div class="field">
+            <label for="targetPF">Target power factor</label>
+            <div class="input-with-badge">
+              <input type="number" id="targetPF" min="0.01" max="1" step="any" value="0.95" required>
+              <span class="input-badge cyan-badge">PF₂</span>
+            </div>
+            <div class="range-labels"><span>0.01 · Low</span><span>1.00 · Ideal</span></div>
+            <small class="error" id="targetPFError"></small>
+          </div>
+
+          <div class="field">
+            <label for="voltage">Supply voltage <span class="unit">V</span><span class="optional">Optional</span></label>
+            <input type="number" id="voltage" min="1" step="any" value="415">
+            <small class="field-hint">Used to estimate supply current.</small>
+            <small class="error" id="voltageError"></small>
+          </div>
+
+          <div class="field">
+            <label for="phase">Supply configuration</label>
+            <select id="phase">
+              <option value="3">Three-phase</option>
+              <option value="1">Single-phase</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="primary-button calculate-button">Calculate results <span>→</span></button>
+            <button type="button" id="resetBtn" class="reset-button">Reset</button>
+          </div>
+          <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="results-column">
+          <div class="results-panel">
+            <div class="results-top">
+              <div><span class="small-label">YOUR CALCULATION</span><h3>Correction summary</h3></div>
+              <span class="result-tag">ESTIMATE</span>
+            </div>
+
+            <div class="main-result">
+              <div class="main-result-label"><span class="main-result-icon">ϟ</span> Required capacitor compensation</div>
+              <div class="big-number"><span id="qcResult">55.32</span><small>kVAR</small></div>
+              <p id="qcCaption">Estimated reactive power compensation required.</p>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric-card"><span>Existing apparent power</span><strong id="s1Result">133.33 <small>kVA</small></strong></div>
+              <div class="metric-card"><span>Corrected apparent power</span><strong id="s2Result">105.26 <small>kVA</small></strong></div>
+              <div class="metric-card"><span>Existing reactive power</span><strong id="q1Result">88.19 <small>kVAR</small></strong></div>
+              <div class="metric-card"><span>Target reactive power</span><strong id="q2Result">32.87 <small>kVAR</small></strong></div>
+            </div>
+
+            <div class="reduction-card">
+              <div><span>Apparent power reduction</span><strong id="reductionResult">28.07 kVA</strong></div>
+              <div class="reduction-percent" id="reductionPercent">21.1%</div>
+            </div>
+            <div class="current-comparison">
+              <div><span>Estimated current before</span><strong id="currentBefore">185.5 A</strong></div>
+              <div class="current-arrow">→</div>
+              <div><span>Estimated current after</span><strong id="currentAfter">146.4 A</strong></div>
+            </div>
+            <p class="current-note" id="currentNote">Calculated at 415 V, three-phase.</p>
+          </div>
+<div class="chart-panel" id="calculationBreakdown">
+  <div class="chart-heading">
+    <div>
+      <h3>How we calculated it</h3>
+      <p>Step-by-step calculation using your inputs.</p>
+    </div>
+  </div>
+
+  <div class="formula-step">
+    <span>STEP 01</span>
+    <p>Existing reactive power</p>
+    <code id="formulaQ1">Q₁ = P × tan(cos⁻¹(PF₁))</code>
+  </div>
+
+  <div class="formula-step">
+    <span>STEP 02</span>
+    <p>Target reactive power</p>
+    <code id="formulaQ2">Q₂ = P × tan(cos⁻¹(PF₂))</code>
+  </div>
+
+  <div class="formula-step">
+    <span>STEP 03</span>
+    <p>Required capacitor compensation</p>
+    <code id="formulaQc">Qc = Q₁ − Q₂</code>
+  </div>
+</div>
+          <div class="chart-panel">
+            <div class="chart-heading"><div><h3>Before vs. after</h3><p>Compare reactive power and apparent power.</p></div></div>
+            <div class="chart-wrap"><canvas id="comparisonChart" aria-label="Before and after power comparison chart"></canvas></div>
+            <div class="chart-legend"><span><i class="legend-before"></i> Before correction</span><span><i class="legend-after"></i> After correction</span></div>
+          </div>
+          <div class="report-actions">
+  <button id="copyBtn" type="button" class="outline-button">
+    ▣ Copy results
+  </button>
+
+  <button id="downloadBtn" type="button" class="primary-button">
+    ↓ Download report
+  </button>
+</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="method-section section">
+      <div class="section-heading">
+        <div><div class="eyebrow">02 / THE METHOD</div><h2>The science behind the result.</h2><p>Understand how the calculator estimates the correction requirement.</p></div>
+      </div>
+      <div class="method-grid">
+        <article class="method-card"><span class="step-number">01</span><h3>Determine the phase angle</h3><p>Power factor is the cosine of the phase angle between voltage and current.</p><div class="formula">φ = cos⁻¹(PF)</div></article>
+        <article class="method-card"><span class="step-number">02</span><h3>Calculate reactive power</h3><p>Estimate reactive power for the existing and desired power factor at the same real power.</p><div class="formula">Q = P × tan(φ)</div></article>
+        <article class="method-card"><span class="step-number">03</span><h3>Estimate compensation</h3><p>The difference between the two reactive power values estimates capacitor-bank capacity.</p><div class="formula">Qc = Q₁ − Q₂</div></article>
+      </div>
+      <div class="formula-banner"><div><span class="small-label">THE COMPLETE FORMULA</span><h3>Required capacitor capacity</h3></div><div class="complete-formula">Qc = P [tan(cos⁻¹ PF₁) − tan(cos⁻¹ PF₂)]</div></div>
+    </section>
+
+    <section class="insight-section section">
+      <div class="insight-copy"><div class="eyebrow">03 / WHY IT MATTERS</div><h2>Less reactive burden.<br><span>Better utilisation.</span></h2><p>Improving a lagging power factor can reduce reactive power demand and supply current for the same real power, potentially freeing capacity in electrical equipment.</p><div class="insight-points"><div><span>✓</span> Estimate capacitor-bank sizing</div><div><span>✓</span> Compare electrical parameters</div><div><span>✓</span> Explain the calculation transparently</div></div></div>
+      <div class="insight-visual"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="center-bolt">ϟ</div><div class="orbit-label orbit-label-one">REAL POWER <b>kW</b></div><div class="orbit-label orbit-label-two">REACTIVE POWER <b>kVAR</b></div><div class="orbit-label orbit-label-three">APPARENT POWER <b>kVA</b></div></div>
+    </section>
+
+    <section id="about" class="safety-section">
+      <div class="safety-icon">ⓘ</div><div><h3>Engineering note</h3><p>This calculator provides theoretical estimates for sinusoidal systems and assumes constant real power. Actual installations require assessment of harmonics, resonance, load variation, capacitor-bank steps, switching, and protection by a qualified electrical engineer. Results are not a substitute for an engineering design.</p></div>
+    </section>
+  </main>
+
+  <footer class="footer"><a class="brand" href="#"><span class="brand-icon">ϟ</span><span>PowerFactor<span class="brand-accent">Pro</span></span></a><p>Power smarter. Estimate responsibly.</p><span>Engineering calculator · Educational use</span></footer>
+</body>
+</html>
